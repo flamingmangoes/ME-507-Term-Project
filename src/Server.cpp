@@ -78,6 +78,405 @@ void HTML_header (String& a_string, const char* page_title)
  *  live gain tuning. It includes a live readout of the commanded speed and actual speed of the 
  *  motor.
  */
+// void handle_DocumentRoot ()
+// {
+//     Serial << "HTTP request from client #" << server.client () << endl;
+
+//     // --- Handle incoming GET parameters on the server side ---
+
+//     // Torque command (in N·m, goes to outer loop)
+//     if (server.hasArg("torque"))
+//     {
+//         String torque_str = server.arg("torque");
+//         float torque_web = torque_str.toFloat();
+
+//         // Outer-loop command: torque -> Controller -> speed_cmd
+//         torque_cmd.put(torque_web);
+//     }
+
+//     // Direct speed command (RPM, bypass torque loop)
+//     if (server.hasArg("speed_cmd"))
+//     {
+//         String speed_cmd_str = server.arg("speed_cmd");
+//         float speed_cmd_rpm = speed_cmd_str.toFloat();
+
+//         // Inner-loop command: direct speed command in RPM
+//         speed_cmd.put(speed_cmd_rpm);
+//     }
+
+//     // Write FILK1 gain to the DRV8308
+//     if (server.hasArg("FILK1"))
+//     {
+//         String filk1_str = server.arg("FILK1");
+//         uint16_t filk1_val = filk1_str.toInt();
+//         Peripheral.drv_write(0x06, filk1_val);
+//     }
+
+//     // Write FILK2 gain to the DRV8308
+//     if (server.hasArg("FILK2"))
+//     {
+//         String filk2_str = server.arg("FILK2");
+//         uint16_t filk2_val = filk2_str.toInt();
+//         Peripheral.drv_write(0x07, filk2_val);
+//     }
+
+//     // Write COMPK1 gain to the DRV8308
+//     if (server.hasArg("COMPK1"))
+//     {
+//         String compk1_str = server.arg("COMPK1");
+//         uint16_t compk1_val = compk1_str.toInt();
+//         Peripheral.drv_write(0x08, compk1_val);
+//     }
+
+//     // Write COMPK2 gain to the DRV8308
+//     if (server.hasArg("COMPK2"))
+//     {
+//         String compk2_str = server.arg("COMPK2");
+//         uint16_t compk2_val = compk2_str.toInt();
+//         Peripheral.drv_write(0x09, compk2_val);
+//     }
+
+//     // Write SPDGAIN to the DRV8308
+//     if (server.hasArg("SPDGAIN"))
+//     {
+//         String spdgain_str = server.arg("SPDGAIN");
+//         uint16_t spdgain_val = spdgain_str.toInt();
+//         Peripheral.drv_write(0x05, spdgain_val);
+//     }
+
+//     // Write LOOPGAIN to the DRV8308
+//     if (server.hasArg("LOOPGAIN"))
+//     {
+//         String loopgain_str = server.arg("LOOPGAIN");
+//         uint16_t loopgain_val = loopgain_str.toInt();
+//         Peripheral.drv_write(0x0A, loopgain_val);
+//     }
+
+//     // Write SPEED to the DRV8308
+//     if (server.hasArg("SPEED"))
+//     {
+//         String speed_str = server.arg("SPEED");
+//         uint16_t speed_val = speed_str.toInt();
+//         Peripheral.drv_write(0x0B, speed_val);
+//     }
+
+//     // --- Build HTML page ---
+//     String a_str;
+//     HTML_header(a_str, "Motor Control");
+
+//     // ============== The following layout was built by ChatGPT 5.1 ==============
+
+//     // Simple layout + typography to fit on one screen
+//     a_str += "<style>\n";
+//     a_str += "  body { margin: 8px; font-family: Arial, sans-serif; font-size: 13px; }\n";
+//     a_str += "  #layout { display: flex; flex-direction: row; align-items: flex-start; gap: 12px; }\n";
+//     a_str += "  #leftPanel { flex: 0 0 280px; max-width: 320px; }\n";
+//     a_str += "  #rightPanel { flex: 1 1 auto; }\n";
+//     a_str += "  h1 { font-size: 18px; margin: 4px 0 8px 0; }\n";
+//     a_str += "  h2 { font-size: 14px; margin: 8px 0 4px 0; }\n";
+//     a_str += "  h3 { font-size: 13px; margin: 4px 0; }\n";
+//     a_str += "  form { margin: 4px 0 6px 0; padding: 4px; border: 1px solid #ddd; border-radius: 4px; }\n";
+//     a_str += "  form p { margin: 2px 0 4px 0; font-size: 12px; }\n";
+//     a_str += "  input[type=\"number\"] { width: 100%; box-sizing: border-box; font-size: 12px; }\n";
+//     a_str += "  input[type=\"submit\"] { margin-top: 4px; font-size: 12px; padding: 2px 6px; }\n";
+//     a_str += "  p.status { margin: 0 0 2px 0; font-size: 11px; min-height: 1em; }\n";
+//     a_str += "</style>\n";
+
+//     a_str += "<body>\n";
+//     a_str += "<div id=\"layout\">\n";
+
+//     // ===== LEFT PANEL: forms =====
+//     a_str += "<div id=\"leftPanel\">\n";
+
+//     a_str += "<h1>Motor Control Interface</h1>\n";
+
+//     // ----- Torque command form -----
+//     a_str += "<h2>Torque Command</h2>\n";
+//     a_str += "<form id=\"torqueForm\" action=\"/\" method=\"GET\">\n";
+//     a_str += "  <p>Enter torque command (N·m):</p>\n";
+//     a_str += "  <input type=\"number\" step=\"0.001\" name=\"torque\" required>\n";
+//     a_str += "  <input type=\"submit\" value=\"Send\">\n";
+//     a_str += "</form>\n";
+//     a_str += "<p id=\"status_torque\" class=\"status\"></p>\n";
+
+//     // ----- Speed command form -----
+//     a_str += "<h2>Speed Command</h2>\n";
+//     a_str += "<form id=\"speedCmdForm\" action=\"/\" method=\"GET\">\n";
+//     a_str += "  <p>Enter speed command (RPM):</p>\n";
+//     a_str += "  <input type=\"number\" step=\"1\" name=\"speed_cmd\" required>\n";
+//     a_str += "  <input type=\"submit\" value=\"Send\">\n";
+//     a_str += "</form>\n";
+//     a_str += "<p id=\"status_speed_cmd\" class=\"status\"></p>\n";
+
+//     // ----- Gain forms -----
+//     a_str += "<h2>Gain Settings</h2>\n";
+
+//     // FILK1
+//     a_str += "<p id=\"status_FILK1\" class=\"status\"></p>\n";
+//     a_str += "<form id=\"FILK1Form\" action=\"/\" method=\"GET\">\n";
+//     a_str += "  <p>FILK1 gain (0 to 4095):</p>\n";
+//     a_str += "  <input type=\"number\" step=\"1\" min=\"0\" max=\"4095\" name=\"FILK1\" required>\n";
+//     a_str += "  <input type=\"submit\" value=\"Set FILK1\">\n";
+//     a_str += "</form>\n";
+
+//     // FILK2
+//     a_str += "<p id=\"status_FILK2\" class=\"status\"></p>\n";
+//     a_str += "<form id=\"FILK2Form\" action=\"/\" method=\"GET\">\n";
+//     a_str += "  <p>FILK2 gain (0 to 4095):</p>\n";
+//     a_str += "  <input type=\"number\" step=\"1\" min=\"0\" max=\"4095\" name=\"FILK2\" required>\n";
+//     a_str += "  <input type=\"submit\" value=\"Set FILK2\">\n";
+//     a_str += "</form>\n";
+
+//     // COMPK1
+//     a_str += "<p id=\"status_COMPK1\" class=\"status\"></p>\n";
+//     a_str += "<form id=\"COMPK1Form\" action=\"/\" method=\"GET\">\n";
+//     a_str += "  <p>COMPK1 gain (0 to 4095):</p>\n";
+//     a_str += "  <input type=\"number\" step=\"1\" min=\"0\" max=\"4095\" name=\"COMPK1\" required>\n";
+//     a_str += "  <input type=\"submit\" value=\"Set COMPK1\">\n";
+//     a_str += "</form>\n";
+
+//     // COMPK2
+//     a_str += "<p id=\"status_COMPK2\" class=\"status\"></p>\n";
+//     a_str += "<form id=\"COMPK2Form\" action=\"/\" method=\"GET\">\n";
+//     a_str += "  <p>COMPK2 gain (0 to 4095):</p>\n";
+//     a_str += "  <input type=\"number\" step=\"1\" min=\"0\" max=\"4095\" name=\"COMPK2\" required>\n";
+//     a_str += "  <input type=\"submit\" value=\"Set COMPK2\">\n";
+//     a_str += "</form>\n";
+
+//     // SPDGAIN
+//     a_str += "<p id=\"status_SPDGAIN\" class=\"status\"></p>\n";
+//     a_str += "<form id=\"SPDGAINForm\" action=\"/\" method=\"GET\">\n";
+//     a_str += "  <p>SPDGAIN (0 to 4095):</p>\n";
+//     a_str += "  <input type=\"number\" step=\"1\" min=\"0\" max=\"4095\" name=\"SPDGAIN\" required>\n";
+//     a_str += "  <input type=\"submit\" value=\"Set SPDGAIN\">\n";
+//     a_str += "</form>\n";
+
+//     // LOOPGAIN
+//     a_str += "<p id=\"status_LOOPGAIN\" class=\"status\"></p>\n";
+//     a_str += "<form id=\"LOOPGAINForm\" action=\"/\" method=\"GET\">\n";
+//     a_str += "  <p>LOOPGAIN (0 to 1023):</p>\n";
+//     a_str += "  <input type=\"number\" step=\"1\" min=\"0\" max=\"1023\" name=\"LOOPGAIN\" required>\n";
+//     a_str += "  <input type=\"submit\" value=\"Set LOOPGAIN\">\n";
+//     a_str += "</form>\n";
+
+//     // SPEED reference
+//     a_str += "<p id=\"status_SPEED\" class=\"status\"></p>\n";
+//     a_str += "<form id=\"SPEEDForm\" action=\"/\" method=\"GET\">\n";
+//     a_str += "  <p>SPEED reference (0 to 4095):</p>\n";
+//     a_str += "  <input type=\"number\" step=\"1\" min=\"0\" max=\"4095\" name=\"SPEED\" required>\n";
+//     a_str += "  <input type=\"submit\" value=\"Set SPEED Ref\">\n";
+//     a_str += "</form>\n";
+
+//     a_str += "</div>\n"; // end leftPanel
+
+//     // ===== RIGHT PANEL: plot =====
+//     a_str += "<div id=\"rightPanel\">\n";
+//     a_str += "<h2>Actual Speed vs Time</h2>\n";
+//     a_str += "<h3>Live RPM Plot</h3>\n";
+//     a_str += "<canvas id=\"speedCanvas\" width=\"600\" height=\"350\" ";
+//     a_str += "style=\"border:1px solid #000000;\"></canvas>\n";
+//     a_str += "</div>\n"; // end rightPanel
+
+//     a_str += "</div>\n"; // end layout
+
+//     // ----- JavaScript: forms + plot -----
+//     a_str += "<script>\n";
+
+//     // Data arrays
+//     a_str += "let data = [];\n";        // actual RPM
+//     a_str += "let timeData = [];\n";    // time stamps
+//     a_str += "let cmdData = [];\n";     // commanded RPM history
+//     a_str += "let currentCmd = NaN;\n"; // latest commanded RPM
+//     a_str += "let maxPoints = 200;\n";
+//     a_str += "let startTime = Date.now();\n";
+//     a_str += "const canvas = document.getElementById('speedCanvas');\n";
+//     a_str += "const ctx = canvas.getContext('2d');\n";
+
+//     // Helper: attach AJAX behavior so forms don't refresh the page
+//     a_str += "function attachAjaxForm(formId, paramName, statusId, label, updateCmd){\n";
+//     a_str += "  const form = document.getElementById(formId);\n";
+//     a_str += "  if (!form) return;\n";
+//     a_str += "  form.addEventListener('submit', function(e){\n";
+//     a_str += "    e.preventDefault();\n";
+//     a_str += "    const formData = new FormData(form);\n";
+//     a_str += "    const val = formData.get(paramName);\n";
+//     a_str += "    if (val === null || val === '') return;\n";
+//     a_str += "    if (updateCmd) {\n";
+//     a_str += "      const num = parseFloat(val);\n";
+//     a_str += "      if (!isNaN(num)) currentCmd = num;\n";
+//     a_str += "    }\n";
+//     a_str += "    const url = '/?' + encodeURIComponent(paramName) + '=' + encodeURIComponent(val);\n";
+//     a_str += "    fetch(url)\n";
+//     a_str += "      .then(r => r.text())\n";
+//     a_str += "      .then(function(txt){\n";
+//     a_str += "        const st = document.getElementById(statusId);\n";
+//     a_str += "        if (st) st.innerHTML = '<b>' + label + val + '</b>';\n";
+//     a_str += "      })\n";
+//     a_str += "      .catch(function(err){ console.log(err); });\n";
+//     a_str += "  });\n";
+//     a_str += "}\n";
+
+//     // Attach handlers for all forms (no page reload)
+//     a_str += "attachAjaxForm('torqueForm',    'torque',    'status_torque',    'Last torque command sent: ', false);\n";
+//     a_str += "attachAjaxForm('speedCmdForm',  'speed_cmd', 'status_speed_cmd', 'Last speed command sent: ', true);\n";
+//     a_str += "attachAjaxForm('FILK1Form',     'FILK1',     'status_FILK1',     'Last FILK1 gain value: ', false);\n";
+//     a_str += "attachAjaxForm('FILK2Form',     'FILK2',     'status_FILK2',     'Last FILK2 gain value: ', false);\n";
+//     a_str += "attachAjaxForm('COMPK1Form',    'COMPK1',    'status_COMPK1',    'Last COMPK1 gain value: ', false);\n";
+//     a_str += "attachAjaxForm('COMPK2Form',    'COMPK2',    'status_COMPK2',    'Last COMPK2 gain value: ', false);\n";
+//     a_str += "attachAjaxForm('SPDGAINForm',   'SPDGAIN',   'status_SPDGAIN',   'Last SPDGAIN value: ', false);\n";
+//     a_str += "attachAjaxForm('LOOPGAINForm',  'LOOPGAIN',  'status_LOOPGAIN',  'Last LOOPGAIN value: ', false);\n";
+//     a_str += "attachAjaxForm('SPEEDForm',     'SPEED',     'status_SPEED',     'Last SPEED reference value: ', false);\n";
+
+//     // Fetch latest RPM from /speed
+//     a_str += "function fetchSpeed(){\n";
+//     a_str += "  fetch('/speed').then(r => r.text()).then(txt => {\n";
+//     a_str += "    let rpm = parseFloat(txt);\n";
+//     a_str += "    let t = (Date.now() - startTime)/1000.0; // seconds\n";
+//     a_str += "    if(!isNaN(rpm)){\n";
+//     a_str += "      data.push(rpm);\n";
+//     a_str += "      timeData.push(t);\n";
+//     a_str += "      cmdData.push(currentCmd);\n";
+//     a_str += "      if(data.length > maxPoints){\n";
+//     a_str += "        data.shift();\n";
+//     a_str += "        timeData.shift();\n";
+//     a_str += "        cmdData.shift();\n";
+//     a_str += "      }\n";
+//     a_str += "      drawPlot();\n";
+//     a_str += "    }\n";
+//     a_str += "  }).catch(e => { console.log(e); });\n";
+//     a_str += "}\n";
+
+//     // Draw the plot on the canvas
+//     a_str += "function drawPlot(){\n";
+//     a_str += "  ctx.clearRect(0,0,canvas.width,canvas.height);\n";
+//     a_str += "  if(data.length < 2) return;\n";
+
+//     // Determine bounds (include both actual and commanded where defined)
+//     a_str += "  let tmin = timeData[0];\n";
+//     a_str += "  let tmax = timeData[timeData.length-1];\n";
+//     a_str += "  let ymin = Math.min.apply(null, data);\n";
+//     a_str += "  let ymax = Math.max.apply(null, data);\n";
+//     a_str += "  let hasCmd = false;\n";
+//     a_str += "  for (let i = 0; i < cmdData.length; i++) {\n";
+//     a_str += "    let v = cmdData[i];\n";
+//     a_str += "    if (!isNaN(v)) {\n";
+//     a_str += "      if (!hasCmd) {\n";
+//     a_str += "        ymin = Math.min(ymin, v);\n";
+//     a_str += "        ymax = Math.max(ymax, v);\n";
+//     a_str += "        hasCmd = true;\n";
+//     a_str += "      } else {\n";
+//     a_str += "        if (v < ymin) ymin = v;\n";
+//     a_str += "        if (v > ymax) ymax = v;\n";
+//     a_str += "      }\n";
+//     a_str += "    }\n";
+//     a_str += "  }\n";
+//     a_str += "  if(ymax === ymin){ ymin -= 10; ymax += 10; }\n";
+
+//     // Simple padding
+//     a_str += "  let leftPad = 50, rightPad = 10, topPad = 10, bottomPad = 40;\n";
+
+//     // Axes
+//     a_str += "  ctx.beginPath();\n";
+//     a_str += "  ctx.moveTo(leftPad, topPad);\n";
+//     a_str += "  ctx.lineTo(leftPad, canvas.height-bottomPad);\n";
+//     a_str += "  ctx.lineTo(canvas.width-rightPad, canvas.height-bottomPad);\n";
+//     a_str += "  ctx.strokeStyle = '#000000';\n";
+//     a_str += "  ctx.stroke();\n";
+
+//     // Draw grid and Y-axis numeric labels (RPM)
+//     a_str += "  ctx.font = '12px Helvetica';\n";
+//     a_str += "  ctx.textAlign = 'right';\n";
+//     a_str += "  ctx.textBaseline = 'middle';\n";
+//     a_str += "  let yTicks = 5;\n";
+//     a_str += "  for (let i = 0; i <= yTicks; i++) {\n";
+//     a_str += "    let val = ymin + (i * (ymax - ymin) / yTicks);\n";
+//     a_str += "    let y = canvas.height - bottomPad - (val - ymin) / (ymax - ymin) * (canvas.height - topPad - bottomPad);\n";
+//     a_str += "    ctx.beginPath();\n";
+//     a_str += "    ctx.moveTo(leftPad - 5, y);\n";
+//     a_str += "    ctx.lineTo(canvas.width - rightPad, y);\n";
+//     a_str += "    ctx.strokeStyle = '#cccccc';\n";
+//     a_str += "    ctx.stroke();\n";
+//     a_str += "    ctx.fillStyle = '#000000';\n";
+//     a_str += "    ctx.fillText(val.toFixed(0), leftPad - 8, y);\n";
+//     a_str += "  }\n";
+
+//     // Draw X-axis numeric labels (time in seconds)
+//     a_str += "  ctx.textAlign = 'center';\n";
+//     a_str += "  ctx.textBaseline = 'top';\n";
+//     a_str += "  let xTicks = 5;\n";
+//     a_str += "  for (let i = 0; i <= xTicks; i++) {\n";
+//     a_str += "    let tVal = tmin + (i * (tmax - tmin) / xTicks);\n";
+//     a_str += "    let x = leftPad + (tVal - tmin) / (tmax - tmin) * (canvas.width - leftPad - rightPad);\n";
+//     a_str += "    ctx.beginPath();\n";
+//     a_str += "    ctx.moveTo(x, canvas.height - bottomPad);\n";
+//     a_str += "    ctx.lineTo(x, canvas.height - bottomPad + 5);\n";
+//     a_str += "    ctx.strokeStyle = '#000000';\n";
+//     a_str += "    ctx.stroke();\n";
+//     a_str += "    ctx.fillText(tVal.toFixed(1), x, canvas.height - bottomPad + 8);\n";
+//     a_str += "  }\n";
+
+//     // Plot actual speed line (black)
+//     a_str += "  ctx.beginPath();\n";
+//     a_str += "  ctx.strokeStyle = '#000000';\n";
+//     a_str += "  for(let i=0;i<data.length;i++){\n";
+//     a_str += "    let x = leftPad + (timeData[i]-tmin)/(tmax-tmin) * (canvas.width-leftPad-rightPad);\n";
+//     a_str += "    let y = canvas.height-bottomPad - (data[i]-ymin)/(ymax-ymin) * (canvas.height-topPad-bottomPad);\n";
+//     a_str += "    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);\n";
+//     a_str += "  }\n";
+//     a_str += "  ctx.stroke();\n";
+
+//     // Plot commanded speed line (red), skipping NaNs
+//     a_str += "  ctx.beginPath();\n";
+//     a_str += "  ctx.strokeStyle = '#ff0000';\n";
+//     a_str += "  let firstCmd = true;\n";
+//     a_str += "  for (let i=0; i<cmdData.length; i++) {\n";
+//     a_str += "    let c = cmdData[i];\n";
+//     a_str += "    if (isNaN(c)) continue;\n";
+//     a_str += "    let x = leftPad + (timeData[i]-tmin)/(tmax-tmin) * (canvas.width-leftPad-rightPad);\n";
+//     a_str += "    let y = canvas.height-bottomPad - (c-ymin)/(ymax-ymin) * (canvas.height-topPad-bottomPad);\n";
+//     a_str += "    if (firstCmd) { ctx.moveTo(x,y); firstCmd = false; } else { ctx.lineTo(x,y); }\n";
+//     a_str += "  }\n";
+//     a_str += "  if (!firstCmd) ctx.stroke();\n";
+
+//     // Labels + legend
+//     a_str += "  ctx.font = '14px Helvetica';\n";
+//     a_str += "  ctx.fillStyle = '#000000';\n";
+//     a_str += "  ctx.textAlign = 'center';\n";
+//     a_str += "  ctx.textBaseline = 'alphabetic';\n";
+//     a_str += "  ctx.fillText('Time (s)', canvas.width/2, canvas.height-5);\n";
+//     a_str += "  ctx.save();\n";
+//     a_str += "  ctx.translate(15, canvas.height/2);\n";
+//     a_str += "  ctx.rotate(-Math.PI/2);\n";
+//     a_str += "  ctx.fillText('Speed (RPM)', 0, 0);\n";
+//     a_str += "  ctx.restore();\n";
+
+//     // Simple legend in top-right
+//     a_str += "  let legendX = canvas.width - 10 - 100;\n";
+//     a_str += "  let legendY = 10 + 10;\n";
+//     a_str += "  ctx.textAlign = 'left';\n";
+//     a_str += "  ctx.textBaseline = 'middle';\n";
+//     a_str += "  // actual\n";
+//     a_str += "  ctx.strokeStyle = '#000000';\n";
+//     a_str += "  ctx.beginPath(); ctx.moveTo(legendX, legendY); ctx.lineTo(legendX+20, legendY); ctx.stroke();\n";
+//     a_str += "  ctx.fillStyle = '#000000'; ctx.fillText('Actual', legendX+25, legendY);\n";
+//     a_str += "  // commanded\n";
+//     a_str += "  ctx.strokeStyle = '#ff0000';\n";
+//     a_str += "  ctx.beginPath(); ctx.moveTo(legendX, legendY+15); ctx.lineTo(legendX+20, legendY+15); ctx.stroke();\n";
+//     a_str += "  ctx.fillStyle = '#000000'; ctx.fillText('Command', legendX+25, legendY+15);\n";
+
+//     a_str += "}\n";
+
+//     // Poll every 200 ms
+//     a_str += "setInterval(fetchSpeed, 200);\n";
+
+//     a_str += "</script>\n";
+
+//     a_str += "</body>\n</html>\n";
+
+//     server.send (200, "text/html", a_str);
+// }
+
+
 void handle_DocumentRoot ()
 {
     Serial << "HTTP request from client #" << server.client () << endl;
@@ -275,8 +674,9 @@ void handle_DocumentRoot ()
     a_str += "<h3>Live RPM Plot</h3>\n";
     a_str += "<canvas id=\"speedCanvas\" width=\"600\" height=\"350\" ";
     a_str += "style=\"border:1px solid #000000;\"></canvas>\n";
+    a_str += "<br/>\n";
+    a_str += "<button id=\"downloadBtn\" type=\"button\" onclick=\"downloadCSV()\">Download CSV</button>\n";
     a_str += "</div>\n"; // end rightPanel
-
     a_str += "</div>\n"; // end layout
 
     // ----- JavaScript: forms + plot -----
@@ -287,7 +687,7 @@ void handle_DocumentRoot ()
     a_str += "let timeData = [];\n";    // time stamps
     a_str += "let cmdData = [];\n";     // commanded RPM history
     a_str += "let currentCmd = NaN;\n"; // latest commanded RPM
-    a_str += "let maxPoints = 200;\n";
+    // a_str += "let maxPoints = 200;\n";
     a_str += "let startTime = Date.now();\n";
     a_str += "const canvas = document.getElementById('speedCanvas');\n";
     a_str += "const ctx = canvas.getContext('2d');\n";
@@ -336,11 +736,11 @@ void handle_DocumentRoot ()
     a_str += "      data.push(rpm);\n";
     a_str += "      timeData.push(t);\n";
     a_str += "      cmdData.push(currentCmd);\n";
-    a_str += "      if(data.length > maxPoints){\n";
-    a_str += "        data.shift();\n";
-    a_str += "        timeData.shift();\n";
-    a_str += "        cmdData.shift();\n";
-    a_str += "      }\n";
+    // a_str += "      if(data.length > maxPoints){\n";
+    // a_str += "        data.shift();\n";
+    // a_str += "        timeData.shift();\n";
+    // a_str += "        cmdData.shift();\n";
+    // a_str += "      }\n";
     a_str += "      drawPlot();\n";
     a_str += "    }\n";
     a_str += "  }).catch(e => { console.log(e); });\n";
@@ -466,6 +866,28 @@ void handle_DocumentRoot ()
 
     a_str += "}\n";
 
+    // ----- CSV download helper -----
+    a_str += "function downloadCSV(){\n";
+    a_str += "  if (data.length === 0) { return; }\n";
+    a_str += "  let csv = 'time_s,actual_rpm,command_rpm\\n';\n";
+    a_str += "  for (let i = 0; i < data.length; i++) {\n";
+    a_str += "    let t = timeData[i].toFixed(3);\n";
+    a_str += "    let vAct = data[i].toFixed(3);\n";
+    a_str += "    let vCmd = cmdData[i];\n";
+    a_str += "    let vCmdStr = isNaN(vCmd) ? '' : vCmd.toFixed(3);\n";
+    a_str += "    csv += t + ',' + vAct + ',' + vCmdStr + '\\n';\n";
+    a_str += "  }\n";
+    a_str += "  let blob = new Blob([csv], {type: 'text/csv'});\n";
+    a_str += "  let url = URL.createObjectURL(blob);\n";
+    a_str += "  let a = document.createElement('a');\n";
+    a_str += "  a.href = url;\n";
+    a_str += "  a.download = 'speed_log.csv';\n";
+    a_str += "  document.body.appendChild(a);\n";
+    a_str += "  a.click();\n";
+    a_str += "  document.body.removeChild(a);\n";
+    a_str += "  URL.revokeObjectURL(url);\n";
+    a_str += "}\n";
+
     // Poll every 200 ms
     a_str += "setInterval(fetchSpeed, 200);\n";
 
@@ -475,6 +897,7 @@ void handle_DocumentRoot ()
 
     server.send (200, "text/html", a_str);
 }
+
 
 
 

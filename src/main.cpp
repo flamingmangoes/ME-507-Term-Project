@@ -83,12 +83,12 @@ void setup()
     // Task which uses an integrator to calculate the speed from a commanded torque
     // This task runs every time a value is placed into torque_cmd
     // In the future this is how we will set our control loop frequency
-    xTaskCreate(task_calcSetpoint, "Calculate Setpoint", 4096, NULL, 4, NULL);
+    xTaskCreate(task_calcSetpoint, "Calculate Setpoint", 4096, NULL, 3, NULL);
 
     // Task which uses a state machine to command the motor speed
     // If in idle state, this task will not run until a value is placed into speed_cmd
     // This task will run every 10ms until back in idle state
-    xTaskCreate(task_speedControl, "Speed Control", 4096, NULL, 3, NULL);
+    xTaskCreate(task_speedControl, "Speed Control", 4096, NULL, 4, NULL);
 }
 
 
