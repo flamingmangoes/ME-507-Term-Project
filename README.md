@@ -1,6 +1,6 @@
 This project is a 1 rotational degree of freedom prototype for an autonomously controlled momentum exchange device. It includes a reaction flywheel driven by a brushless DC motor, a printed circuit board schematic and layout for the motor controller, and a software architecture to interact with the ESP32 microcontroller.
 
-The hardware consists of a reaction flywheel, its housing, the brushless DC motor, a frictionless air spindle, a test stand, an air compressor, and the PCB with its necessary components. More information can be found in the README.md in the hardware folder: // add it here
+The hardware consists of a reaction flywheel, its housing, the brushless DC motor, a frictionless air spindle, a test stand, an air compressor, and the PCB with its necessary components. More information can be found in the README.md in the hardware folder: (https://github.com/flamingmangoes/ME-507-Term-Project/blob/main/hardware/README.md)
 
 The software relies on a FreeRTOS-based task architecture, and it has functionality for wireless speed and torque command of the motor, live speed readout, live gain tuning, and downloading a CSV of test data.
 The task diagram is as follows: 
